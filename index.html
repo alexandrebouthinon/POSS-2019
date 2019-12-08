@@ -19,24 +19,119 @@ background-position: 50% 75%
 
 background-image: url(./img/devops.png)
 background-size: 150%
-background-position: 50% 50% 
-
 
 ---
 
-# Disclamer
+class: middle center
+
+# A bit of context...
 
 ---
+
+background-image: url(./img/orchestrators.jpg)
+
+# Orchestrators
+
+---
+
+class: middle
+background-image: url(./img/swarm.png)
+background-position: 90% 50% 
+background-size: 40%
 
 # Docker Swarm
 
+* Developed by Docker Inc.
+* Shipped with Docker Engine
+* Docker Compose file syntax
+* Under Apache 2.0 license
+
 ---
+
+# Docker Swarm: Cluster creation
+
+First manager node creation
+
+~~~rust
+docker swarm init
+~~~
+
+Add a new worker node
+
+~~~rust
+docker swarm join --token SWARM_CLUSTER_TOKEN MANAGER_IP:2377
+~~~
+
+Add a new manager node
+~~~rust
+docker swarm join-token manager
+~~~
+
+---
+
+# Docker Swarm: Stack configuration
+
+`grav.yml`
+~~~yaml
+version: '3.7'
+services:
+  grav:
+    image: yobasystems/alpine-grav:latest
+    environment:
+      VIRTUAL_HOST: 'www.example.com'
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: 'on-failure'
+~~~
+
+Deployment using Docker CLI
+
+~~~rust
+$ docker stack deploy -c grav.yml site
+~~~
+
+---
+
+background-image: url(./img/deployment.gif)
+background-size: 100%
+background-color: black
+
+---
+
+class: middle
+background-image: url(./img/facepalm.png)
+background-position: 80% 50% 
+background-size: 40%
+
+# Missing a router...
+
+---
+
+class: middle
+background-image: url(./img/traefik.png)
+background-position: 90% 50% 
+background-size: 40%
 
 # Traefik
 
----
+* Developed by Containous
+* HTTP/TCP proxy made for container
+* HTTPS certificates with Let's Encrypt
+* Under MIT license
 
-# Traefik
+---
+background-image: url(./img/traefik-architecture.png)
+background-size: 100%
+background-position: 50% 75% 
+
+# Traefik: How it works?
+
+---
+background-color: black
+background-image: url(./img/demo.gif)
+
+<h1 style="color: white;"> Let's play!</h1>
 
 ---
 
