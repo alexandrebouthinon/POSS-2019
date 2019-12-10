@@ -1,6 +1,10 @@
-# Paris Open Source Summit 2019: Swarm & Traefik
-### ...how to build a scalable prod without ruining yourself
+# Swarm & Traefik
+## ...how to build a scalable prod without ruining yourself
+### Paris Open Source Summit 2019: 
 
+<a href="https://alexandrebouthinon.github.io/POSS-2019">
+  <img src="https://img.shields.io/badge/slides-online-blueviolet"/>
+</a>
 
 ## Docker Swarm
 
