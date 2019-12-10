@@ -1,8 +1,7 @@
 # Swarm & Traefik
-## ...how to build a scalable prod without ruining yourself
-### Paris Open Source Summit 2019: 
+## How to build a scalable prod without ruining yourself
 
-<a href="https://alexandrebouthinon.github.io/POSS-2019">
+<a href="https://alexandrebouthinon.github.io/Swarm-and-Traefik">
   <img src="https://img.shields.io/badge/slides-online-blueviolet"/>
 </a>
 
