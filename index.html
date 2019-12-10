@@ -26,6 +26,7 @@ background-size: 40%
 * HTTP, MQTT & WebSocket support
 * Under Apache 2.0 license
 
+
 ---
 name: begin
 class: top center
@@ -59,6 +60,7 @@ background-size: 40%
 * Developed by Docker Inc.
 * Shipped with Docker Engine
 * Docker Compose file syntax
+* Docker secrets and configs
 * Under Apache 2.0 license
 
 ---
@@ -84,16 +86,50 @@ docker swarm join-token manager
 
 ---
 
+~~~yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana-logging
+  namespace: kube-system
+  labels:
+    k8s-app: kibana-logging
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kibana-logging
+  template:
+    metadata:
+      labels:
+        k8s-app: kibana-logging
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
+    spec:
+      containers:
+      - name: kibana-logging
+        image: docker.elastic.co/kibana/kibana-oss:7.2.0
+    ...
+~~~
+---
+
+background-color: black
+background-image: url(./img/wtf.jpg)
+
+---
+
 # Docker Swarm: Stack configuration
 
-`grav.yml`
+`kibana.yml`
 ~~~yaml
 version: '3.7'
 services:
-  grav:
-    image: yobasystems/alpine-grav:latest
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:7.2.0
     environment:
-      VIRTUAL_HOST: 'www.example.com'
+      SERVER_NAME: kibana.example.org
+      ELASTICSEARCH_HOSTS: http://elasticsearch.example.org
     deploy:
       replicas: 1
       restart_policy:
@@ -103,13 +139,13 @@ services:
 Deployment using Docker CLI
 
 ~~~rust
-$ docker stack deploy -c grav.yml site
+$ docker stack deploy -c kibana.yml kibana
 ~~~
 
 ---
 
 background-image: url(./img/deployment.gif)
-background-size: 100%
+background-size: 90%
 background-color: black
 
 ---
@@ -136,11 +172,63 @@ background-size: 40%
 * Under MIT license
 
 ---
-background-image: url(./img/traefik-architecture.png)
-background-size: 100%
-background-position: 50% 75% 
+# Traefik: Installation and configuration
 
-# Traefik: How it works?
+Use binary release and give arguments to the launching command...
+~~~toml
+traefik --providers.docker=true \
+  --providers.docker.endpoint=unix:///var/run/docker.sock \
+  --providers.docker.swarmmode=true \
+  --providers.docker.exposedbydefault=false \
+  --providers.docker.network=traefik-network \
+  --entrypoints.web.address=:80 \
+  --entrypoints.websecure.address=:443"
+~~~
+
+...or use a classical config file
+
+~~~toml
+traefik --configFile=foo/bar/myconfigfile.toml
+~~~
+
+...or the docker image
+~~~toml
+docker run -d -p 80:80 \
+    -v $PWD/traefik.toml:/etc/traefik/traefik.toml traefik:v2.0
+~~~
+
+---
+
+# Traefik: Service routing
+
+~~~yaml
+version: '3.7'
+networks:
+  traefik-network:
+    external: true
+services:
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:7.2.0
+    environment:
+      SERVER_NAME: kibana.example.com
+      ELASTICSEARCH_HOSTS: http://elasticsearch.example.org
+    networks:
+      - traefik-network
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: 'on-failure'
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.kibana.rule: "Host(`kibana.example.com`)"
+        traefik.http.routers.kibana.entrypoints: "web"
+        traefik.http.services.kibana-svc.loadbalancer.server.port: 5601
+~~~
+---
+
+background-image: url(./img/magic.gif)
+background-size: 90%
+background-color: black
 
 ---
 
@@ -155,7 +243,7 @@ background-position: 75% 75%
 background-color: black
 background-image: url(./img/demo.gif)
 
-<h1 style="color: white;"> Let's play!</h1>
+<h1 style="color: white;">Let's play!</h1>
 
 ---
 
@@ -166,6 +254,18 @@ background-size: 450px 450px
 <img id="slides-qr" src="./img/slides-qr.svg"/>
 
 .center[https://github.com/alexandrebouthinon/POSS-2019]
+---
+
+class: center
+background-color: black
+background-size: 60%
+background-position: 50% 80%
+background-image: url(./img/thanks.gif)
+
+<h1 style="color: white;">Thank you!</h1>
+
+
+
     </textarea>
     <script src="js/vendors/remark-latest.min.js"></script>
     <script src="js/index.js"></script>
